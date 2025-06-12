@@ -14,6 +14,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+import tempfile
 
 def test_login_invalid():
     chrome_options = Options()
@@ -21,7 +22,9 @@ def test_login_invalid():
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--remote-debugging-port=9222")
+
+    # ✅ TEMP directory to avoid user-data-dir error
+    chrome_options.add_argument(f"--user-data-dir={tempfile.mkdtemp()}")
 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     driver.get("http://localhost:3000/signin")
@@ -30,7 +33,6 @@ def test_login_invalid():
     driver.find_element(By.NAME, "password").send_keys("wrongpass")
     driver.find_element(By.XPATH, "//button[text()='Signin']").click()
 
-    time.sleep(2)  # Wait for error to appear (if needed)
-
+    time.sleep(2)
     assert "Invalid email or password" in driver.page_source
     driver.quit()
