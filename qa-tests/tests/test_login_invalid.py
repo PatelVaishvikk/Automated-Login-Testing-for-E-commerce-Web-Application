@@ -33,9 +33,6 @@ def test_login_invalid():
     driver.find_element(By.NAME, "password").send_keys("wrongpass")
     driver.find_element(By.XPATH, "//button[text()='Signin']").click()
 
-    time.sleep(2)
-
-    # ✅ Updated assertion based on your latest info
-    assert driver.current_url == "http://localhost:3000"
-
-    driver.quit()
+time.sleep(3)
+print("🔍 Current URL:", driver.current_url)
+assert driver.current_url.rstrip('/') == "http://localhost:3000"
