@@ -31,12 +31,12 @@ jobs:
 
 
 
-    - name: Build frontend
-      run: |
-        cd frontend
-        npm run build
-      env:
-        NODE_OPTIONS: --openssl-legacy-provider
+   - name: Build frontend
+    run: |
+      cd frontend
+      CI='' npm run build
+    env:
+      NODE_OPTIONS: --openssl-legacy-provider
 
     - name: Start frontend server
       run: |
