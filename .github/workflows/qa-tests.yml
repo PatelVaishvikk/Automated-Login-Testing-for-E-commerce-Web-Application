@@ -36,13 +36,11 @@ jobs:
         env:
           NODE_OPTIONS: --openssl-legacy-provider
 
-      - name: Start frontend server
+      - name: Serve production build
         run: |
-          cd frontend
-          npm run start &
-        env:
-          CI: true
-
+          npm install -g serve
+          serve -s frontend/build -l 3000 &
+          
       - name: Wait for frontend to be available
         run: |
           echo "Waiting for http://localhost:3000 to be available..."
