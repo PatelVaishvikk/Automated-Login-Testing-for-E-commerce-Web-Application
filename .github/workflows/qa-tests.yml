@@ -11,56 +11,54 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-    - name: Install frontend dependencies
-      run: |
-        cd frontend
-        npm install
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
 
+      - name: Build frontend
+        run: |
+          cd frontend
+          CI='' npm run build
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
 
+      - name: Start frontend server
+        run: |
+          cd frontend
+          npm run start &
+        env:
+          CI: true
 
-   - name: Build frontend
-    run: |
-      cd frontend
-      CI='' npm run build
-    env:
-      NODE_OPTIONS: --openssl-legacy-provider
+      - name: Wait for frontend to be available
+        run: |
+          echo "Waiting for http://localhost:3000 to be available..."
+          for i in {1..60}; do
+            if curl --output /dev/null --silent --head --fail http://localhost:3000; then
+              echo "Frontend is up!"
+              break
+            fi
+            echo "Waiting..."
+            sleep 2
+          done
 
-    - name: Start frontend server
-      run: |
-        cd frontend
-        npm run start &
-      env:
-        CI: true
+      - name: Install Python dependencies
+        run: |
+          pip install -r qa-tests/requirements.txt
 
-    - name: Wait for frontend to be available
-      run: |
-        echo "Waiting for http://localhost:3000 to be available..."
-        for i in {1..60}; do
-          if curl --output /dev/null --silent --head --fail http://localhost:3000; then
-            echo "Frontend is up!"
-            break
-          fi
-          echo "Waiting..."
-          sleep 2
-        done
-
-    - name: Install Python dependencies
-      run: |
-        pip install -r qa-tests/requirements.txt
-
-    - name: Run pytest
-      run: |
-        pytest qa-tests/tests/ --maxfail=1 --disable-warnings --html=report.html
+      - name: Run pytest
+        run: |
+          pytest qa-tests/tests/ --maxfail=1 --disable-warnings --html=report.html
