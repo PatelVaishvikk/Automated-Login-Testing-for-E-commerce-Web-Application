@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import express from 'express';
 import Product from '../models/productModel';
 import { isAuth, isAdmin } from '../util';
@@ -26,11 +27,15 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-  const product = await Product.findOne({ _id: req.params.id });
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).send({ message: 'Invalid Product ID' });
+  }
+
+  const product = await Product.findById(req.params.id);
   if (product) {
     res.send(product);
   } else {
-    res.status(404).send({ message: 'Product Not Found.' });
+    res.status(404).send({ message: 'Product Not Found' });
   }
 });
 router.post('/:id/reviews', isAuth, async (req, res) => {

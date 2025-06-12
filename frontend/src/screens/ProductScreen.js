@@ -25,13 +25,10 @@ function ProductScreen(props) {
       dispatch({ type: PRODUCT_REVIEW_SAVE_RESET });
     }
     dispatch(detailsProduct(props.match.params.id));
-    return () => {
-      //
-    };
-  }, [productSaveSuccess]);
+  }, [dispatch, productSaveSuccess, props.match.params.id]);
+
   const submitHandler = (e) => {
     e.preventDefault();
-    // dispatch actions
     dispatch(
       saveProductReview(props.match.params.id, {
         name: userInfo.name,
@@ -40,8 +37,9 @@ function ProductScreen(props) {
       })
     );
   };
+
   const handleAddToCart = () => {
-    props.history.push('/cart/' + props.match.params.id + '?qty=' + qty);
+    props.history.push(`/cart/${props.match.params.id}?qty=${qty}`);
   };
 
   return (
@@ -52,63 +50,42 @@ function ProductScreen(props) {
       {loading ? (
         <div>Loading...</div>
       ) : error ? (
-        <div>{error} </div>
-      ) : (
+        <div>{error}</div>
+      ) : product ? (
         <>
           <div className="details">
             <div className="details-image">
-              <img src={product.image} alt="product"></img>
+              <img src={product.image || ''} alt="product" />
             </div>
             <div className="details-info">
               <ul>
-                <li>
-                  <h4>{product.name}</h4>
-                </li>
+                <li><h4>{product.name}</h4></li>
                 <li>
                   <a href="#reviews">
-                    <Rating
-                      value={product.rating}
-                      text={product.numReviews + ' reviews'}
-                    />
+                    <Rating value={product.rating} text={`${product.numReviews} reviews`} />
                   </a>
                 </li>
-                <li>
-                  Price: <b>${product.price}</b>
-                </li>
-                <li>
-                  Description:
-                  <div>{product.description}</div>
-                </li>
+                <li>Price: <b>${product.price}</b></li>
+                <li>Description: <div>{product.description}</div></li>
               </ul>
             </div>
             <div className="details-action">
               <ul>
                 <li>Price: {product.price}</li>
-                <li>
-                  Status:{' '}
-                  {product.countInStock > 0 ? 'In Stock' : 'Unavailable.'}
-                </li>
-                <li>
-                  Qty:{' '}
-                  <select
-                    value={qty}
-                    onChange={(e) => {
-                      setQty(e.target.value);
-                    }}
-                  >
-                    {[...Array(product.countInStock).keys()].map((x) => (
-                      <option key={x + 1} value={x + 1}>
-                        {x + 1}
-                      </option>
-                    ))}
-                  </select>
-                </li>
+                <li>Status: {product.countInStock > 0 ? 'In Stock' : 'Unavailable.'}</li>
+                {product.countInStock > 0 && (
+                  <li>
+                    Qty:
+                    <select value={qty} onChange={(e) => setQty(e.target.value)}>
+                      {[...Array(product.countInStock).keys()].map((x) => (
+                        <option key={x + 1} value={x + 1}>{x + 1}</option>
+                      ))}
+                    </select>
+                  </li>
+                )}
                 <li>
                   {product.countInStock > 0 && (
-                    <button
-                      onClick={handleAddToCart}
-                      className="button primary"
-                    >
+                    <button onClick={handleAddToCart} className="button primary">
                       Add to Cart
                     </button>
                   )}
@@ -118,15 +95,15 @@ function ProductScreen(props) {
           </div>
           <div className="content-margined">
             <h2>Reviews</h2>
-            {!product.reviews.length && <div>There is no review</div>}
+            {(!product.reviews || product.reviews.length === 0) && (
+              <div>There is no review</div>
+            )}
             <ul className="review" id="reviews">
-              {product.reviews.map((review) => (
+              {product.reviews?.map((review) => (
                 <li key={review._id}>
                   <div>{review.name}</div>
-                  <div>
-                    <Rating value={review.rating}></Rating>
-                  </div>
-                  <div>{review.createdAt.substring(0, 10)}</div>
+                  <div><Rating value={review.rating} /></div>
+                  <div>{review.createdAt?.substring(0, 10)}</div>
                   <div>{review.comment}</div>
                 </li>
               ))}
@@ -147,7 +124,7 @@ function ProductScreen(props) {
                           <option value="2">2- Fair</option>
                           <option value="3">3- Good</option>
                           <option value="4">4- Very Good</option>
-                          <option value="5">5- Excelent</option>
+                          <option value="5">5- Excellent</option>
                         </select>
                       </li>
                       <li>
@@ -159,9 +136,7 @@ function ProductScreen(props) {
                         ></textarea>
                       </li>
                       <li>
-                        <button type="submit" className="button primary">
-                          Submit
-                        </button>
+                        <button type="submit" className="button primary">Submit</button>
                       </li>
                     </ul>
                   </form>
@@ -174,7 +149,7 @@ function ProductScreen(props) {
             </ul>
           </div>
         </>
-      )}
+      ) : null}
     </div>
   );
 }

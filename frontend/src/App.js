@@ -25,6 +25,7 @@ function App() {
   const closeMenu = () => {
     document.querySelector('.sidebar').classList.remove('open');
   };
+
   return (
     <BrowserRouter>
       <div className="grid-container">
@@ -34,7 +35,7 @@ function App() {
             <Link to="/">amazona</Link>
           </div>
           <div className="header-links">
-            <a href="cart.html">Cart</a>
+            <Link to="/cart">Cart</Link> {/* ✅ FIXED */}
             {userInfo ? (
               <Link to="/profile">{userInfo.name}</Link>
             ) : (
@@ -62,7 +63,6 @@ function App() {
             <li>
               <Link to="/category/Pants">Pants</Link>
             </li>
-
             <li>
               <Link to="/category/Shirts">Shirts</Link>
             </li>

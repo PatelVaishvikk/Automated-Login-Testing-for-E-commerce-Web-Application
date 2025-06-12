@@ -8,12 +8,13 @@ import productRoute from './routes/productRoute';
 import orderRoute from './routes/orderRoute';
 import uploadRoute from './routes/uploadRoute';
 
+console.log('MONGODB_URL (from server.js start): ', process.env.MONGODB_URL);
+
 const mongodbUrl = config.MONGODB_URL;
 mongoose
   .connect(mongodbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useCreateIndex: true,
   })
   .catch((error) => console.log(error.reason));
 

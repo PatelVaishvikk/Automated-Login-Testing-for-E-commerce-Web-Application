@@ -1,55 +1,43 @@
-import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
-import axios from 'axios';
-function PaypalButton(props) {
-  const [sdkReady, setSdkReady] = useState(false);
+import React, { useEffect, useRef } from 'react';
 
-  const addPaypalSdk = async () => {
-    const result = await axios.get("/api/config/paypal");
-    const clientID = result.data;
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = 'https://www.paypal.com/sdk/js?client-id=' + clientID;
-    script.async = true;
-    script.onload = () => {
-      setSdkReady(true);
-    }
-    document.body.appendChild(script);
-  }
-
-  const createOrder = (data, actions) => actions.order.create({
-    purchase_units: [
-      {
-        amount: {
-          currency_code: 'USD',
-          value: props.amount
-        }
-      }
-    ]
-  });
-
-  const onApprove = (data, actions) => actions.order
-    .capture()
-    .then(details => props.onSuccess(data, details))
-    .catch(err => console.log(err));
+export default function PaypalButton({ amount, onSuccess }) {
+  const paypalRef = useRef();
 
   useEffect(() => {
-    if (!window.paypal) {
-      addPaypalSdk();
-    }
-    return () => {
-      //
+    const CLIENT_ID = process.env.REACT_APP_PAYPAL_CLIENT_ID || 'sb';
+
+    const addPayPalScript = async () => {
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = `https://www.paypal.com/sdk/js?client-id=${CLIENT_ID}`;
+      script.async = true;
+      script.onload = () => {
+        window.paypal
+          .Buttons({
+            createOrder: (data, actions) => {
+              return actions.order.create({
+                purchase_units: [
+                  {
+                    amount: {
+                      value: amount,
+                    },
+                  },
+                ],
+              });
+            },
+            onApprove: (data, actions) => {
+              return actions.order.capture().then((details) => {
+                onSuccess(details);
+              });
+            },
+          })
+          .render(paypalRef.current);
+      };
+      document.body.appendChild(script);
     };
-  }, []);
 
-  if (!sdkReady) {
-    return <div>Loading...</div>
-  }
+    addPayPalScript();
+  }, [amount, onSuccess]);
 
-  const Button = window.paypal.Buttons.driver('react', { React, ReactDOM });
-
-  return <Button {...props} createOrder={(data, actions) => createOrder(data, actions)}
-    onApprove={(data, actions) => onApprove(data, actions)} />
+  return <div ref={paypalRef}></div>;
 }
-
-export default PaypalButton;

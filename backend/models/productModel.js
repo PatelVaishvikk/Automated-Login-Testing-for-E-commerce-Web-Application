@@ -4,13 +4,14 @@ const reviewSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     rating: { type: Number, default: 0 },
-    comment: { type: String, required: true },
+    comment: { type: String },
   },
   {
     timestamps: true,
   }
 );
-const prodctSchema = new mongoose.Schema({
+
+const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   image: { type: String, required: true },
   brand: { type: String, required: true },
@@ -23,6 +24,6 @@ const prodctSchema = new mongoose.Schema({
   reviews: [reviewSchema],
 });
 
-const productModel = mongoose.model('Product', prodctSchema);
+const Product = mongoose.model('Product', productSchema);
 
-export default productModel;
+export default Product;
