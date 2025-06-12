@@ -22,6 +22,6 @@ def test_login_valid():
     driver.find_element(By.NAME, "password").send_keys("1234")
     driver.find_element(By.XPATH, "//button[text()='Signin']").click()
 
-time.sleep(3)
-print("🔍 Current URL:", driver.current_url)
-assert driver.current_url.rstrip('/') == "http://localhost:3000"
+    time.sleep(3)
+    print("🔍 Current URL:", driver.current_url)
+    assert driver.current_url.rstrip('/') == "http://localhost:3000"
