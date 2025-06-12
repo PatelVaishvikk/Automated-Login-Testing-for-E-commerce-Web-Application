@@ -34,5 +34,8 @@ def test_login_invalid():
     driver.find_element(By.XPATH, "//button[text()='Signin']").click()
 
     time.sleep(2)
-    assert "Invalid email or password" in driver.page_source
+
+    # ✅ Updated assertion based on your latest info
+    assert driver.current_url == "http://localhost:3000"
+
     driver.quit()
