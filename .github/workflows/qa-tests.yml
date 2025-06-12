@@ -29,17 +29,26 @@ jobs:
         cd frontend
         npm install
 
+    - name: Build frontend
+      run: |
+        cd frontend
+        npm run build
+
     - name: Start frontend server
       run: |
         cd frontend
-        npm run dev &
+        npm run start &
       env:
         CI: true
 
     - name: Wait for frontend to be available
       run: |
         echo "Waiting for http://localhost:3000 to be available..."
-        until curl --output /dev/null --silent --head --fail http://localhost:3000; do
+        for i in {1..60}; do
+          if curl --output /dev/null --silent --head --fail http://localhost:3000; then
+            echo "Frontend is up!"
+            break
+          fi
           echo "Waiting..."
           sleep 2
         done
