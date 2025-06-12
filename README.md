@@ -7,6 +7,9 @@ This project showcases a Selenium-based automation suite for testing the login w
 This automation project is designed to validate the authentication workflow (sign-in functionality) using Selenium WebDriver, Pytest, and GitHub Actions. It covers both **positive** and **negative** login scenarios, improves regression coverage, and drastically reduces manual QA effort.
 
 ---
+![Screenshot](https://raw.githubusercontent.com/PatelVaishvikk/Automated-Login-Testing-for-E-commerce-Web-Application/main/Screenshot%202025-06-12%20184322.png)
+
+
 
 ## ✅ Features Covered
 
